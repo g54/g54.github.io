@@ -1,0 +1,390 @@
+<!DOCTYPE HTML>
+<!--
+	Spectral by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>G54 Rebellion</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+	<script>
+	function convertBase(value, from_base, to_base) {
+  var range = '0123456789abcdefghijkmnopqrstuvwxyz,.*#-=+ABCDEFGHIJKLMNOPQRSTUVWXYZ+/'.split('');
+  var from_range = range.slice(0, from_base);
+  var to_range = range.slice(0, to_base);
+  
+  var dec_value = value.split('').reverse().reduce(function (carry, digit, index) {
+    if (from_range.indexOf(digit) === -1) throw new Error('Invalid digit `'+digit+'` for base '+from_base+'.');
+    return carry += from_range.indexOf(digit) * (Math.pow(from_base, index));
+  }, 0);
+  
+  var new_value = '';
+  while (dec_value > 0) {
+    new_value = to_range[dec_value % to_base] + new_value;
+    dec_value = (dec_value - (dec_value % to_base)) / to_base;
+  }
+  return new_value || '0';
+}
+	function setVisible(item) {
+		var e=document.getElementById(item)  ;
+				if (e!=null) {
+					e.style.display='block';
+				}
+	}
+	
+	function myFunction() {
+			 var lab=		document.getElementById("lab_code")  ;
+			 var lab2=		document.getElementById("lab_code2")  ;
+			 var sc=parseInt(document.getElementById("sel_comm").value) ;
+			 var sfo=parseInt(document.getElementById("sel_for").value)  ;
+			 var sf=parseInt(document.getElementById("sel_fin").value ) ;
+			 var sia=parseInt(document.getElementById("sel_sa").value ) ;
+			 var sib=parseInt(document.getElementById("sel_sb").value)  ;
+  			 //lab.innerHTML=sco + " " + sfi + " " + sia + " " + sfo + " " + sib;
+			 
+			 var e=null;
+			 for (i = 1; i <= 7; i++) { 
+				e=document.getElementById("f"+i)  ;
+				if (e!=null) {
+					e.style.display='none';
+				}
+				e=document.getElementById("fo"+i)  ;
+				if (e!=null) {
+					e.style.display='none';
+				}
+				e=document.getElementById("c"+i)  ;
+				if (e!=null) {
+					e.style.display='none';
+				}
+			}
+			 for (i = 1; i <= 12; i++) { 
+				e=document.getElementById("si"+i)  ;
+				if (e!=null) {
+					e.style.display='none';
+				}
+			}
+			var selected=["c"+sc, "fo"+sfo, "f"+sf, "si"+sia,"si"+sib];
+			selected.forEach(setVisible);
+			 
+
+		var raw=((((sc << 3) + sf <<4) + sia << 3) + sfo <<4) + sib;
+		lab2.innerHTML=convertBase(""+raw,10,35);
+		
+		
+	}
+	</script>
+	</head>
+	<body class="landing">
+
+		<!-- Page Wrapper -->
+			<div id="page-wrapper">
+
+				<!-- Header -->
+					<header id="header" class="alt">
+						<h1><a href="index.html">Spectral</a></h1>
+						<nav id="nav">
+							<ul>
+								<li class="special">
+									<a href="#menu" class="menuToggle"><span>Menu</span></a>
+									<div id="menu">
+										<ul>
+										<!--
+											 <label id="lab_code" for="">&nbsp;</label><br/>
+											 <label id="lab_code2" for="">&nbsp;</label>
+											 <input type="text" name="">
+-->
+											<li>
+											 <div id=""> <label for="">FORCE</label>
+											<select id="sel_for" name="sel_force"  onchange="myFunction()">
+											  <option value="1">guerrilla</option>
+											  <option value="2">crime boss</option>
+											  <option value="3">general</option>
+											  <option value="4">mercenary</option>
+											  <option value="5">judge</option>
+											  <option value="6">anarchist</option>
+											  <option value="7">paramilitary</option>
+											</select>
+											</div>
+											</li>
+											
+											<li>
+											<div id=""> <label for="">FINANCE</label>
+											<select id="sel_fin" name="sel_fin"  onchange="myFunction()">
+											  <option value="1">speculator</option>
+											  <option value="2">banker</option>
+											  <option value="3">capitalist</option>
+											  <option value="4">farmer</option>
+											  <option value="5">spy</option>
+											  <option value="6">financier</option>
+											  <option value="7">plantation owner</option>
+											</select>
+											</div>
+											</li>
+											
+											<li>
+											<div id=""> <label for="">COMMUNICATIONS</label>
+											<select id="sel_comm" name="sel_comm" onchange="myFunction()">
+											  <option value="1">producer</option>
+											  <option value="2">director</option>
+											  <option value="3">writer</option>
+											  <option value="4">reporter</option>
+											  <option value="5">newscaster</option>
+											</select>
+											</div>
+											</li>
+
+											<li>
+											<div id=""> <label for="">SPECIAL INTEREST 1</label>
+											<select id="sel_sa" name="sel_sa"  onchange="myFunction()">
+											  <option value="1">peacekeeper</option>
+											  <option value="2">priest</option>
+											  <option value="3">politician</option>
+											  <option value="4">communist</option>
+											  <option value="5">protestor</option>
+											  <option value="6">foreign consular</option>
+											  <option value="7">missionary</option>
+											  <option value="8">customs officer</option>
+											  <option value="9">intellectual</option>
+											  <option value="10">lawyer</option>
+											  <option value="11">arms dealer</option>
+											  <option value="12">socialist</option>
+											</select>
+											</div>
+											</li>
+											
+											<li>
+											<div id=""> <label for="">SPECIAL INTEREST 2</label>
+											<select  id="sel_sb" name="sel_sb"  onchange="myFunction()">
+											  <option value="1">peacekeeper</option>
+											  <option value="2">priest</option>
+											  <option value="3">politician</option>
+											  <option value="4">communist</option>
+											  <option value="5">protestor</option>
+											  <option value="6">foreign consular</option>
+											  <option value="7">missionary</option>
+											  <option value="8">customs officer</option>
+											  <option value="9">intellectual</option>
+											  <option value="10">lawyer</option>
+											  <option value="11">arms dealer</option>
+											  <option value="12">socialist</option>
+											</select>
+											</div>
+											</li>
+											
+											</ul>
+									</div>
+								</li>
+							</ul>
+						</nav>
+					</header>
+
+				<!-- CTA -->
+					<section id="cta" class="wrapper style4">
+						<div class="inner" id="c1">
+							<header>
+								<h2 class="communications">PRODUCER</h2>
+								<p>Active player takes 1 random card from the Deck and 1 card from Target (Target's choice). The active player may secretly change any cards with their own, and then return 1 card to the Deck and 1 card to the Target player.  Counteraction: Target may claim Producer to avoid giving (and then receiving) one of their cards.
+</p>
+							</header>
+						</div>
+						<div class="inner" id="c2">
+							<header>
+								<h2 class="communications">DIRECTOR</h2>
+								<p>Active player takes 2 random cards from the Deck.  They may secretly change any cards with their own, and then return 2 cards to the Deck.</p>
+							</header>
+						</div>
+						<div class="inner" id="c3">
+							<header>
+								<h2 class="communications">WRITER</h2>
+								<p>Active player takes 1 random card from the Deck and looks at it.  They may then pay 1C to the Treasury to take an additional card from the deck, and look at it. They may repeat that process as often as they choose, paying 1C for each additional card.  They may secretly change any cards with their own, and then return as many as cards as they took back to the Deck.</p>
+							</header>
+						</div>
+						<div class="inner" id="c4">
+							<header>
+								<h2 class="communications">REPORTER</h2>
+								<p>Active player takes 1 random card from the Deck and 1C from the Treasury.  They may secretly change the card with one of their own, and then return 1 card to the Deck.</p>
+							</header>
+						</div>
+						<div class="inner" id="c5">
+							<header>
+								<h2 class="communications">NEWSCASTER</h2>
+								<p>Active player pays 1C to the Treasury, then takes 3 random cards from the Deck.  They may secretly change any cards with their own, and then return 3 cards to the Deck.</p>
+							</header>
+						</div>
+						<div class="inner" id="f1">
+							<header>
+								<h2 class="finance">SPECULATOR</h2>
+								<p>Active player takes as many coins from the Treasury as they have already - maximum of 5C.  If the Speculator is successfully challenged, the coins taken from the Treasury are returned and then the challenger takes all the active player's coins.</p>
+							</header>
+						</div>
+						<div class="inner" id="f2">
+							<header>
+								<h2 class="finance">BANKER</h2>
+								<p>Active player takes 3C from the Treasury.</p>
+							</header>
+						</div>
+						<div class="inner" id="f3">
+							<header>
+								<h2 class="finance">CAPITALIST</h2>
+								<p>Active player first takes 4C from the Treasury. Then any other players may also claim Capitalist.  Once all claims have been made, challenges are resolved for new claimants in clockwise order from the active player. Then the active player must give 1C to each surviving Capitalist claimant.</p>
+							</header>
+						</div>
+						<div class="inner" id="f4">
+							<header>
+								<h2 class="finance">FARMER</h2>
+								<p>Active player takes 3C from the Treasury and must then give 1C to another player of their choice.</p>
+							</header>
+						</div>
+						<div class="inner" id="f5">
+							<header>
+								<h2 class="finance">SPY</h2>
+								<p>Active player takes 1C from the Treasury and can then take an additional action of their choice. They cannot take the Intel action again this turn.  If a player starts a turn with 10 or more coins, they must take the Coup action and may not claim Spy before doing so.  If a player takes the Intel action and then has 10 coins - they must take the Coup action as their additional action.</p>
+							</header>
+						</div>
+						<div class="inner" id="f6">
+							<header>
+								<h2 class="finance">FINANCIER</h2>
+								<p>NA</p>
+							</header>
+						</div>
+						<div class="inner" id="f7">
+							<header>
+								<h2 class="finance">PLANTATION OWNER</h2>
+								<p>NA</p>
+							</header>
+						</div>
+						<div class="inner" id="fo1">
+							<header>
+								<h2 class="force">GUERRILLA</h2>
+								<p>Active player pays 4C and declares Target.  Target loses a life.  Counteraction: Target may claim Guerrilla to avoid losing a life.</p>
+							</header>
+						</div>
+						<div class="inner" id="fo2">
+							<header>
+								<h2 class="force">CRIME BOSS</h2>
+								<p>Active player declares a Target.  Target can choose to give the active player 2C and the turn ends. If not, the active player must pay 5C to the Treasury and the Target loses a life.  The active player must have 5C to take this action.</p>
+							</header>
+						</div>
+						<div class="inner" id="fo3">
+							<header>
+								<h2 class="force">GENERAL</h2>
+								<p>Active player pays 5C to the Treasury.  All other players become Targets and lose a life.  Counteraction: Target may claim General to avoid losing a life.</p>
+							</header>
+						</div>
+						<div class="inner" id="fo4">
+							<header>
+								<h2 class="force">MERCENARY</h2>
+								<p>Active player pays 3C to the Treasury and declares a Target. Target places the Disappear token in front of themselves.  If the Target still has the Disappear token at the end of their next turn, they lose a life and then discard the token.  Counteraction: Target may claim Mercenary when they are targeted, or at any time on their next turn to avoid losing a life. They discard the Disappear token if counteracted.</p>
+							</header>
+						</div>
+						<div class="inner" id="fo5">
+							<header>
+								<h2 class="force">JUDGE</h2>
+								<p>Active Player declares a Target and gives Target 3C.  Target loses a life.  Counteraction: Target may claim Judge to avoid losing a life, keeping the 3C given.</p>
+							</header>
+						</div>
+						<div class="inner" id="fo6">
+							<header>
+								<h2 class="force">ANARCHIST</h2>
+								<p>NA</p>
+							</header>
+						</div>
+						<div class="inner" id="fo7">
+							<header>
+								<h2 class="force">PARAMILITARY</h2>
+								<p>NA</p>
+							</header>
+						</div>
+						<div class="inner" id="si1">
+							<header>
+								<h2 class="specialinterest">PEACEKEEPER</h2>
+								<p>Active player takes 1C from the Treasury and then places the Peacekeeping token in front of themselves.  While the Peacekeeping token is front of a player, that player cannot be targeted.  This does not prevent Coup actions nor preclude challenges.</p>
+							</header>
+						</div>
+						<div class="inner" id="si2">
+							<header>
+								<h2 class="specialinterest">PRIEST</h2>
+								<p>When active player claims Priest, all other players become Targets and have to give 1C to the active player.  Counteraction: Target may claim Priest to avoid giving 1C to the active player.</p>
+							</header>
+						</div>
+						<div class="inner" id="si3">
+							<header>
+								<h2 class="specialinterest">POLITICIAN</h2>
+								<p>Active player declares Target and takes up to 2C from Target.  Counteraction: Target may claim Politician to avoid giving any coins.</p>
+							</header>
+						</div>
+						<div class="inner" id="si4">
+							<header>
+								<h2 class="specialinterest">COMMUNIST</h2>
+								<p>Active player takes up to 3C from the player with the most coins (Target) and gives the taken coins to the player with the fewest coins. In the event of a tie for most or fewest coins, the active player decides who is the Target.  Counteraction: Target may claim Communist to avoid giving any coins.</p>
+							</header>
+						</div>
+						<div class="inner" id="si5">
+							<header>
+								<h2 class="specialinterest">PROTESTOR</h2>
+								<p>Active player pays 2C to the Treasury and declares Target. Any player may challenge, if not successfully challenged then any other player can pay 3C to the Treasury to join the Riot, and the Target loses a life. The player joining the Riot does not have to claim Protestor. If no other player joins the Riot, the action fails without coins being returned.  Counteraction: After both players have joined the Riot, the Target may claim Protestor to avoid losing a life.</p>
+							</header>
+						</div>
+						<div class="inner" id="si6">
+							<header>
+								<h2 class="specialinterest">FOREIGN CONSULAR </h2>
+								<p>Active player takes both Treaty tokens, placing one in front of themselves and one in front of another player.  Players with Treaty tokens may not Target each other unless they are the final two players. This includes Coup actions but does not preclude challenges.</p>
+							</header>
+						</div>
+						<div class="inner" id="si7">
+							<header>
+								<h2 class="specialinterest">MISSIONARY</h2>
+								<p>When a player loses a life for any reason other than a Coup, they may claim the Missionary if the Deck has at least one card. The card claimed to be the Missionary is put aside face-down as the lost life and that player takes 1 card from the Deck.  If challenged, the card claimed as the Missionary is revealed. If the card is not the Missionary, the player that claimed the Missionary loses another life (and does not take 1 card from the Deck) - they may claim Missionary on the second life lost to avoid being eliminated. If the card is the Missionary, the challenger loses a life.</p>
+							</header>
+						</div>
+						<div class="inner" id="si8">
+							<header>
+								<h2 class="specialinterest">CUSTOMS OFFICER</h2>
+								<p>Active player takes both Tax tokens, placing one in front of themselves and one on a role card in play. Before any player can claim the role (for either an action or counteraction) that has the Tax token on it, they must first give 1C to the player with the Tax token - if they do not have a coin to give, they may not claim that role.  If the player that has the Tax token is eliminated, remove the Tax token from the role card.</p>
+							</header>
+						</div>
+						<div class="inner" id="si9">
+							<header>
+								<h2 class="specialinterest">INTELLECTUAL</h2>
+								<p>When a player loses a life for any reason, they may claim the Intellectual. The card claimed to be the Intellectual is put aside face-down as the lost life and that player takes 5C from the Treasury. If challenged, the card claimed as the Intellectual is revealed. If the card is not the Intellectual, the player that claimed the Intellectual loses another life (and does not take 5C from the Treasury). If the card is the Intellectual, the challenger loses a life.</p>
+							</header>
+						</div>
+						<div class="inner" id="si10">
+							<header>
+								<h2 class="specialinterest">LAWYER</h2>
+								<p>At the end of any turn on which a player is eliminated, any other player may claim Lawyer and take all the coins from the eliminated player before those coins are returned to the Treasury.  If multiple players claim Lawyer, the coins are divided equally amongst those players with any excess going to the Treasury.</p>
+							</header>
+						</div>
+						<div class="inner" id="si11">
+							<header>
+								<h2 class="specialinterest">ARMS DEALER</h2>
+								<p>NA</p>
+							</header>
+						</div>
+						<div class="inner" id="si12">
+							<header>
+								<h2 class="specialinterest">SOCIALIST</h2>
+								<p>NA</p>
+							</header>
+						</div>
+					</section>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
