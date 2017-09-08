@@ -14,69 +14,43 @@
 		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
 		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
 	<script>
-	function convertBase(value, from_base, to_base) {
-  var range = '0123456789abcdefghijkmnopqrstuvwxyz,.*#-=+ABCDEFGHIJKLMNOPQRSTUVWXYZ+/'.split('');
-  var from_range = range.slice(0, from_base);
-  var to_range = range.slice(0, to_base);
-  
-  var dec_value = value.split('').reverse().reduce(function (carry, digit, index) {
-    if (from_range.indexOf(digit) === -1) throw new Error('Invalid digit `'+digit+'` for base '+from_base+'.');
-    return carry += from_range.indexOf(digit) * (Math.pow(from_base, index));
-  }, 0);
-  
-  var new_value = '';
-  while (dec_value > 0) {
-    new_value = to_range[dec_value % to_base] + new_value;
-    dec_value = (dec_value - (dec_value % to_base)) / to_base;
-  }
-  return new_value || '0';
-}
 	function setVisible(item) {
-		var e=document.getElementById(item)  ;
-				if (e!=null) {
-					e.style.display='block';
-				}
+		var e=document.getElementById(item);
+		if (e!=null) {
+			e.style.display='block';
+		}
 	}
 	
-	function myFunction() {
-			 var lab=		document.getElementById("lab_code")  ;
-			 var lab2=		document.getElementById("lab_code2")  ;
-			 var sc=parseInt(document.getElementById("sel_comm").value) ;
-			 var sfo=parseInt(document.getElementById("sel_for").value)  ;
-			 var sf=parseInt(document.getElementById("sel_fin").value ) ;
-			 var sia=parseInt(document.getElementById("sel_sa").value ) ;
-			 var sib=parseInt(document.getElementById("sel_sb").value)  ;
-  			 //lab.innerHTML=sco + " " + sfi + " " + sia + " " + sfo + " " + sib;
-			 
-			 var e=null;
-			 for (i = 1; i <= 7; i++) { 
-				e=document.getElementById("f"+i)  ;
-				if (e!=null) {
-					e.style.display='none';
-				}
-				e=document.getElementById("fo"+i)  ;
-				if (e!=null) {
-					e.style.display='none';
-				}
-				e=document.getElementById("c"+i)  ;
-				if (e!=null) {
-					e.style.display='none';
-				}
-			}
-			 for (i = 1; i <= 12; i++) { 
-				e=document.getElementById("si"+i)  ;
-				if (e!=null) {
-					e.style.display='none';
-				}
-			}
-			var selected=["c"+sc, "fo"+sfo, "f"+sf, "si"+sia,"si"+sib];
-			selected.forEach(setVisible);
-			 
-
-		var raw=((((sc << 3) + sf <<4) + sia << 3) + sfo <<4) + sib;
-		lab2.innerHTML=convertBase(""+raw,10,35);
+	function hideRole() {
+		var sc=parseInt(document.getElementById("sel_comm").value);
+		var sfo=parseInt(document.getElementById("sel_for").value);
+		var sf=parseInt(document.getElementById("sel_fin").value);
+		var sia=parseInt(document.getElementById("sel_sa").value);
+		var sib=parseInt(document.getElementById("sel_sb").value);
 		
-		
+		var e=null;
+		for (i = 1; i <= 7; i++) { 
+			e=document.getElementById("f"+i);
+			if (e!=null) {
+				e.style.display='none';
+			}
+			e=document.getElementById("fo"+i);
+			if (e!=null) {
+				e.style.display='none';
+			}
+			e=document.getElementById("c"+i);
+			if (e!=null) {
+				e.style.display='none';
+			}
+		}
+		for (i = 1; i <= 12; i++) { 
+			e=document.getElementById("si"+i);
+			if (e!=null) {
+				e.style.display='none';
+			}
+		}
+		var selected=["c"+sc, "fo"+sfo, "f"+sf, "si"+sia,"si"+sib];
+		selected.forEach(setVisible);
 	}
 	</script>
 	</head>
@@ -94,14 +68,9 @@
 									<a href="#menu" class="menuToggle"><span>Menu</span></a>
 									<div id="menu">
 										<ul>
-										<!--
-											 <label id="lab_code" for="">&nbsp;</label><br/>
-											 <label id="lab_code2" for="">&nbsp;</label>
-											 <input type="text" name="">
--->
 											<li>
 											 <div id=""> <label for="">FORCE</label>
-											<select id="sel_for" name="sel_force"  onchange="myFunction()">
+											<select id="sel_for" name="sel_force"  onchange="hideRole()">
 											  <option value="1">guerrilla</option>
 											  <option value="2">crime boss</option>
 											  <option value="3">general</option>
@@ -115,7 +84,7 @@
 											
 											<li>
 											<div id=""> <label for="">FINANCE</label>
-											<select id="sel_fin" name="sel_fin"  onchange="myFunction()">
+											<select id="sel_fin" name="sel_fin"  onchange="hideRole()">
 											  <option value="1">speculator</option>
 											  <option value="2">banker</option>
 											  <option value="3">capitalist</option>
@@ -129,7 +98,7 @@
 											
 											<li>
 											<div id=""> <label for="">COMMUNICATIONS</label>
-											<select id="sel_comm" name="sel_comm" onchange="myFunction()">
+											<select id="sel_comm" name="sel_comm" onchange="hideRole()">
 											  <option value="1">producer</option>
 											  <option value="2">director</option>
 											  <option value="3">writer</option>
@@ -141,7 +110,7 @@
 
 											<li>
 											<div id=""> <label for="">SPECIAL INTEREST 1</label>
-											<select id="sel_sa" name="sel_sa"  onchange="myFunction()">
+											<select id="sel_sa" name="sel_sa"  onchange="hideRole()">
 											  <option value="1">peacekeeper</option>
 											  <option value="2">priest</option>
 											  <option value="3">politician</option>
@@ -160,7 +129,7 @@
 											
 											<li>
 											<div id=""> <label for="">SPECIAL INTEREST 2</label>
-											<select  id="sel_sb" name="sel_sb"  onchange="myFunction()">
+											<select  id="sel_sb" name="sel_sb"  onchange="hideRole()">
 											  <option value="1">peacekeeper</option>
 											  <option value="2">priest</option>
 											  <option value="3">politician</option>
