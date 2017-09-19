@@ -1,3 +1,6 @@
+# personalized
+*.bak
+
 # Logs
 logs
 *.log
