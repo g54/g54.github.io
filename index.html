@@ -13,21 +13,64 @@
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
 		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
-	<script>
+	<script >
+	
+	const prefix="g54.";
+	
 	function setVisible(item) {
 		var e=document.getElementById(item);
 		if (e!=null) {
 			e.style.display='block';
 		}
 	}
+	function localStorageSupported() {
+ try {
+  return "localStorage" in window && window["localStorage"] !== null;
+ } catch (e) {
+  return false;
+ }
+}
+
+	function storeRole(role,card) {
+		localStorage.setItem(prefix+role,card);
+	}
+	function loadRole(role) {
+		v=localStorage.getItem(prefix+role);
+		if (v==null) { return null; }
+		else { return v; }
+	}
 	
-	function hideRole() {
-		var sc=parseInt(document.getElementById("sel_comm").value);
-		var sfo=parseInt(document.getElementById("sel_for").value);
-		var sf=parseInt(document.getElementById("sel_fin").value);
-		var sia=parseInt(document.getElementById("sel_sa").value);
-		var sib=parseInt(document.getElementById("sel_sb").value);
-		
+	function setRoleToDefault(role,card) {
+		r=loadRole(role);
+		e=document.getElementById("sel_"+role);
+		if (r==null) {
+			e.value=card;
+			return card;
+		} else {
+			e.value=r;
+			return r;
+		}
+	}
+	
+	function setRoleToSelected(role) {
+		var s=parseInt(document.getElementById("sel_"+role).value);
+		storeRole(role, s);
+		return s;
+	}
+	
+	function initialHideRole() {
+		var sc=setRoleToDefault("c",2);
+		var sfo=setRoleToDefault("fo",2);
+		var sf=setRoleToDefault("f",2);
+		var sia=setRoleToDefault("si1",1);
+		var sib=setRoleToDefault("si2",3);
+
+		hideAll();
+		var selected=["c"+sc, "fo"+sfo, "f"+sf, "si"+sia,"si"+sib];
+		selected.forEach(setVisible);
+	}
+
+	function hideAll() {
 		var e=null;
 		for (i = 1; i <= 7; i++) { 
 			e=document.getElementById("f"+i);
@@ -49,12 +92,23 @@
 				e.style.display='none';
 			}
 		}
+	}
+	
+	function hideRole() {
+		var roles=["fo","f","c","si1","si2"];
+		var sc=setRoleToSelected("c");
+		var sfo=setRoleToSelected("fo");
+		var sf=setRoleToSelected("f");
+		var sia=setRoleToSelected("si1");
+		var sib=setRoleToSelected("si2");
+		
+		hideAll();
 		var selected=["c"+sc, "fo"+sfo, "f"+sf, "si"+sia,"si"+sib];
 		selected.forEach(setVisible);
 	}
 	</script>
 	</head>
-	<body class="landing">
+	<body class="landing" onload="initialHideRole()">
 
 		<!-- Page Wrapper -->
 			<div id="page-wrapper">
@@ -70,7 +124,7 @@
 										<ul>
 											<li>
 											<div id=""> <label for="">FORCE</label>
-											<select id="sel_for" name="sel_force"  onchange="hideRole()">
+											<select id="sel_fo" name="sel_force"  onchange="hideRole()">
 											  <option value="1">guerrilla</option>
 											  <option value="2">crime boss</option>
 											  <option value="3">general</option>
@@ -84,7 +138,7 @@
 											
 											<li>
 											<div id=""> <label for="">FINANCE</label>
-											<select id="sel_fin" name="sel_fin"  onchange="hideRole()">
+											<select id="sel_f" name="sel_fin"  onchange="hideRole()">
 											  <option value="1">speculator</option>
 											  <option value="2">banker</option>
 											  <option value="3">capitalist</option>
@@ -98,7 +152,7 @@
 											
 											<li>
 											<div id=""> <label for="">COMMUNICATIONS</label>
-											<select id="sel_comm" name="sel_comm" onchange="hideRole()">
+											<select id="sel_c" name="sel_comm" onchange="hideRole()">
 											  <option value="1">producer</option>
 											  <option value="2">director</option>
 											  <option value="3">writer</option>
@@ -110,7 +164,7 @@
 
 											<li>
 											<div id=""> <label for="">SPECIAL INTEREST 1</label>
-											<select id="sel_sa" name="sel_sa"  onchange="hideRole()">
+											<select id="sel_si1" name="sel_sa"  onchange="hideRole()">
 											  <option value="1">peacekeeper</option>
 											  <option value="2">priest</option>
 											  <option value="3">politician</option>
@@ -129,7 +183,7 @@
 											
 											<li>
 											<div id=""> <label for="">SPECIAL INTEREST 2</label>
-											<select  id="sel_sb" name="sel_sb"  onchange="hideRole()">
+											<select  id="sel_si2" name="sel_sb"  onchange="hideRole()">
 											  <option value="1">peacekeeper</option>
 											  <option value="2">priest</option>
 											  <option value="3">politician</option>
@@ -310,7 +364,7 @@
 						</div>
 						<div class="inner" id="si6">
 							<header>
-								<h2 class="specialinterest">FOREIGN CONSULAR </h2>
+								<h2 class="specialinterest">FOREIGN CONSULAR</h2>
 								<p>Active player takes both Treaty tokens, placing one in front of themselves and one in front of another player.  Players with Treaty tokens may not Target each other unless they are the final two players. This includes Coup actions but does not preclude challenges.</p>
 							</header>
 						</div>
