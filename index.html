@@ -13,23 +13,21 @@
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
 		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+		<style>
+		@import url('https://fonts.googleapis.com/css?family=PT+Sans');
+		</style>
 	<script >
 	
 	const prefix="g54.";
+	var installing=false;
 	
 	function setVisible(item) {
 		var e=document.getElementById(item);
 		if (e!=null) {
 			e.style.display='block';
 		}
+		
 	}
-	function localStorageSupported() {
- try {
-  return "localStorage" in window && window["localStorage"] !== null;
- } catch (e) {
-  return false;
- }
-}
 
 	function storeRole(role,card) {
 		localStorage.setItem(prefix+role,card);
@@ -42,9 +40,10 @@
 	
 	function setRoleToDefault(role,card) {
 		r=loadRole(role);
-		e=document.getElementById("sel_"+role);
-		if (r==null) {
+		var e=document.getElementById("sel_"+role);
+		if (r==null || r==0) {
 			e.value=card;
+			storeRole(role,card);
 			return card;
 		} else {
 			e.value=r;
@@ -58,18 +57,42 @@
 		return s;
 	}
 	
+	function getRole(role) {
+		var s=parseInt(document.getElementById("sel_"+role).value);
+		return s;
+	}
+	
+	function setRoleToCode(role,card) {
+		var e=document.getElementById("sel_"+role);
+		if (e!=null) {
+			e.value=card;
+			storeRole(role,card);
+		}
+		return card;
+	}
+	
+	function load() {
+		if(!installing) {
+			initialHideRole();
+
+		}
+		installing=false;
+		showCode();
+		}
+	
 	function initialHideRole() {
 		var sc=setRoleToDefault("c",2);
 		var sfo=setRoleToDefault("fo",2);
 		var sf=setRoleToDefault("f",2);
-		var sia=setRoleToDefault("si1",1);
-		var sib=setRoleToDefault("si2",3);
+		var ssi1=setRoleToDefault("si1",1);
+		var ssi2=setRoleToDefault("si2",3);
 
 		hideAll();
-		var selected=["c"+sc, "fo"+sfo, "f"+sf, "si"+sia,"si"+sib];
+		var selected=["c"+sc, "fo"+sfo, "f"+sf, "si"+ssi1,"si"+ssi2];
 		selected.forEach(setVisible);
 	}
 
+	
 	function hideAll() {
 		var e=null;
 		for (i = 1; i <= 7; i++) { 
@@ -94,21 +117,91 @@
 		}
 	}
 	
+	function showCode() {
+		var sfo=getRole("fo");
+		var sf=getRole("f");
+		var sc=getRole("c");
+		var ssi1=getRole("si1");
+		var ssi2=getRole("si2");
+		var t=document.getElementById("t_code");
+		var bits=new Number(0);
+		bits=((((sfo << 3) + sf << 3) + sc << 4) + ssi1 << 4) + ssi2;
+		t.value = bits.toString(36);
+	}
+	
+	function validateSelections() {
+		var ssi1=getRole("si1");
+		var ssi2=getRole("si2");
+		if (ssi1 == ssi2) {
+			ssi2=setRoleToCode("si2",ssi1 == 12 ? 1 : ssi1 + 1);
+		}
+	}
+	
 	function hideRole() {
-		var roles=["fo","f","c","si1","si2"];
+		var pass=validateSelections();
 		var sc=setRoleToSelected("c");
 		var sfo=setRoleToSelected("fo");
 		var sf=setRoleToSelected("f");
-		var sia=setRoleToSelected("si1");
-		var sib=setRoleToSelected("si2");
+		var ssi1=setRoleToSelected("si1");
+		var ssi2=setRoleToSelected("si2");
 		
 		hideAll();
-		var selected=["c"+sc, "fo"+sfo, "f"+sf, "si"+sia,"si"+sib];
+		var selected=["c"+sc, "fo"+sfo, "f"+sf, "si"+ssi1,"si"+ssi2];
 		selected.forEach(setVisible);
+		showCode();
 	}
+	function between(x,lo,hi) {
+		if (x >= lo && x <= hi) { return true; }
+		else { return false; }
+	}
+	function install() {
+		var t=document.getElementById("t_code");
+		var bits=new Number(0);
+		bits=parseInt(t.value, 36);
+		if(bits==0) {
+			return;
+		}
+		var ssi2=bits & 0xf;
+		bits >>= 4;
+		var ssi1=bits & 0xf;
+		bits >>= 4;
+		var sc=bits & 0x7;
+		bits >>= 3;
+		var sf=bits & 0x7;
+		bits >>= 3;
+		var sfo=bits & 0x7;
+
+		if (
+			!(
+				between(ssi1,1,12)
+				&& between(ssi2,1,12)
+				&& ssi1 != ssi2
+			)
+		) { return; }
+		
+
+		if (
+			!(
+				between(sfo,1,7)
+				&& between(sf,1,7)
+				&& between(sc,1,5)
+			)
+		) { return; }
+
+		ssi2=setRoleToCode("si2",ssi2);
+		ssi1=setRoleToCode("si1",ssi1);
+		sc=setRoleToCode("c",sc);
+		sf=setRoleToCode("f",sf);
+		sfo=setRoleToCode("fo",sfo);
+		hideAll();
+		var selected=["c"+sc, "fo"+sfo, "f"+sf, "si"+ssi1,"si"+ssi2];
+		selected.forEach(setVisible);
+		installing=true;
+	}
+	
 	</script>
 	</head>
-	<body class="landing" onload="initialHideRole()">
+	<body class="landing" onload="load()">
 
 		<!-- Page Wrapper -->
 			<div id="page-wrapper">
@@ -122,6 +215,12 @@
 									<a href="#menu" class="menuToggle"><span>Menu</span></a>
 									<div id="menu">
 										<ul>
+											<li>
+												<form onsubmit="install()" onreset="showCode()">
+													<input type="text" id="t_code" class="codebox" size="5" maxlength="5" width="50%"></input>
+													<input type="submit" value="code"></input>
+												</form>
+											</li>
 											<li>
 											<div id=""> <label for="">FORCE</label>
 											<select id="sel_fo" name="sel_force"  onchange="hideRole()">
@@ -214,43 +313,43 @@
 						<div class="inner" id="fo1">
 							<header>
 								<h2 class="force">GUERRILLA&#x1f6e1;</h2>
-								<p>Active player pays 4C and declares Target.  Target loses a life.  Counteraction: Target may claim Guerrilla to avoid losing a life.</p>
+								<p>Active player pays 4C and declares Target. Target loses a life. <span class="counter">Counteraction:</span> Target may claim Guerrilla to avoid losing a life.</p>
 							</header>
 						</div>
 						<div class="inner" id="fo2">
 							<header>
 								<h2 class="force">CRIME BOSS</h2>
-								<p>Active player declares a Target.  Target can choose to give the active player 2C and the turn ends. If not, the active player must pay 5C to the Treasury and the Target loses a life.  The active player must have 5C to take this action.</p>
+								<p>Active player declares a Target. Target can choose to give the active player 2C and the turn ends. If not, the active player must pay 5C to the Treasury and the Target loses a life. The active player must have 5C to take this action.</p>
 							</header>
 						</div>
 						<div class="inner" id="fo3">
 							<header>
 								<h2 class="force">GENERAL&#x1f6e1;</h2>
-								<p>Active player pays 5C to the Treasury.  All other players become Targets and lose a life.  Counteraction: Target may claim General to avoid losing a life.</p>
+								<p>Active player pays 5C to the Treasury. All other players become Targets and lose a life. <span class="counter">Counteraction:</span> Target may claim General to avoid losing a life.</p>
 							</header>
 						</div>
 						<div class="inner" id="fo4">
 							<header>
 								<h2 class="force">MERCENARY&#x1f6e1;</h2>
-								<p>Active player pays 3C to the Treasury and declares a Target. Target places the Disappear token in front of themselves.  If the Target still has the Disappear token at the end of their next turn, they lose a life and then discard the token.  Counteraction: Target may claim Mercenary when they are targeted, or at any time on their next turn to avoid losing a life. They discard the Disappear token if counteracted.</p>
+								<p>Active player pays 3C to the Treasury and declares a Target. Target places the Disappear token in front of themselves. If the Target still has the Disappear token at the end of their next turn, they lose a life and then discard the token. <span class="counter">Counteraction:</span> Target may claim Mercenary when they are targeted, or at any time on their next turn to avoid losing a life. They discard the Disappear token if counteracted.</p>
 							</header>
 						</div>
 						<div class="inner" id="fo5">
 							<header>
 								<h2 class="force">JUDGE&#x1f6e1;</h2>
-								<p>Active Player declares a Target and gives Target 3C.  Target loses a life.  Counteraction: Target may claim Judge to avoid losing a life, keeping the 3C given.</p>
+								<p>Active Player declares a Target and gives Target 3C. Target loses a life. <span class="counter">Counteraction:</span> Target may claim Judge to avoid losing a life, keeping the 3C given.</p>
 							</header>
 						</div>
 						<div class="inner" id="fo6">
 							<header>
 								<h2 class="force">ANARCHIST&#x1f6e1;</h2>
-								<p>Active player does not have to claim Anarchist to take this action. Active player pays 3C to the Treasury and declares a Target. Target places the Bomb token in front of themselves and must immediately Defuse or Pass the Bomb to a new Target. If they do not Pass or Defuse, the Target loses a life and the Bomb is discarded. Counteraction: Target may claim Anarchist to either Defuse (discard) or Pass the Bomb token to another player. The Bomb may never return to any player that had the Bomb, including the player that first took the Bomb action.</p>
+								<p>Active player does not have to claim Anarchist to take this action. Active player pays 3C to the Treasury and declares a Target. Target places the Bomb token in front of themselves and must immediately Defuse or Pass the Bomb to a new Target. If they do not Pass or Defuse, the Target loses a life and the Bomb is discarded. <span class="counter">Counteraction:</span> Target may claim Anarchist to either Defuse (discard) or Pass the Bomb token to another player. The Bomb may never return to any player that had the Bomb, including the player that first took the Bomb action.</p>
 							</header>
 						</div>
 						<div class="inner" id="fo7">
 							<header>
 								<h2 class="force">PARAMILITARY&#x1f6e1;</h2>
-								<p>Active player declares a Target and pays 3C if the Target has 2 remaining lives (cards) or 5C if the Target has 1 remaining life. Target loses a life. Counteraction: Target may claim Paramilitary to avoid losing a life.</p>
+								<p>Active player declares a Target and pays 3C if the Target has 2 remaining lives (cards) or 5C if the Target has 1 remaining life. Target loses a life. <span class="counter">Counteraction:</span> Target may claim Paramilitary to avoid losing a life.</p>
 							</header>
 						</div>
 
@@ -258,7 +357,7 @@
 						<div class="inner" id="f1">
 							<header>
 								<h2 class="finance">SPECULATOR</h2>
-								<p>Active player takes as many coins from the Treasury as they have already - maximum of 5C.  If the Speculator is successfully challenged, the coins taken from the Treasury are returned and then the challenger takes all the active player's coins.</p>
+								<p>Active player takes as many coins from the Treasury as they have already - maximum of 5C. If the Speculator is successfully challenged, the coins taken from the Treasury are returned and then the challenger takes all the active player's coins.</p>
 							</header>
 						</div>
 						<div class="inner" id="f2">
@@ -270,7 +369,7 @@
 						<div class="inner" id="f3">
 							<header>
 								<h2 class="finance">CAPITALIST</h2>
-								<p>Active player first takes 4C from the Treasury. Then any other players may also claim Capitalist.  Once all claims have been made, challenges are resolved for new claimants in clockwise order from the active player. Then the active player must give 1C to each surviving Capitalist claimant.</p>
+								<p>Active player first takes 4C from the Treasury. Then any other players may also claim Capitalist. Once all claims have been made, challenges are resolved for new claimants in clockwise order from the active player. Then the active player must give 1C to each surviving Capitalist claimant.</p>
 							</header>
 						</div>
 						<div class="inner" id="f4">
@@ -282,7 +381,7 @@
 						<div class="inner" id="f5">
 							<header>
 								<h2 class="finance">SPY</h2>
-								<p>Active player takes 1C from the Treasury and can then take an additional action of their choice. They cannot take the Intel action again this turn.  If a player starts a turn with 10 or more coins, they must take the Coup action and may not claim Spy before doing so.  If a player takes the Intel action and then has 10 coins - they must take the Coup action as their additional action.</p>
+								<p>Active player takes 1C from the Treasury and can then take an additional action of their choice. They cannot take the Intel action again this turn. If a player starts a turn with 10 or more coins, they must take the Coup action and may not claim Spy before doing so. If a player takes the Intel action and then has 10 coins - they must take the Coup action as their additional action.</p>
 							</header>
 						</div>
 						<div class="inner" id="f6">
@@ -302,32 +401,32 @@
 						<div class="inner" id="c1">
 							<header>
 								<h2 class="communications">PRODUCER&#x1f6e1;</h2>
-								<p>Active player takes 1 random card from the Deck and 1 card from Target (Target's choice). The active player may secretly change any cards with their own, and then return 1 card to the Deck and 1 card to the Target player.  Counteraction: Target may claim Producer to avoid giving (and then receiving) one of their cards.
+								<p>Active player takes 1 random card from the Deck and 1 card from Target (Target's choice). The active player may secretly change any cards with their own, and then return 1 card to the Deck and 1 card to the Target player. <span class="counter">Counteraction:</span> Target may claim Producer to avoid giving (and then receiving) one of their cards.
 </p>
 							</header>
 						</div>
 						<div class="inner" id="c2">
 							<header>
 								<h2 class="communications">DIRECTOR</h2>
-								<p>Active player takes 2 random cards from the Deck.  They may secretly change any cards with their own, and then return 2 cards to the Deck.</p>
+								<p>Active player takes 2 random cards from the Deck. They may secretly change any cards with their own, and then return 2 cards to the Deck.</p>
 							</header>
 						</div>
 						<div class="inner" id="c3">
 							<header>
 								<h2 class="communications">WRITER</h2>
-								<p>Active player takes 1 random card from the Deck and looks at it.  They may then pay 1C to the Treasury to take an additional card from the deck, and look at it. They may repeat that process as often as they choose, paying 1C for each additional card.  They may secretly change any cards with their own, and then return as many as cards as they took back to the Deck.</p>
+								<p>Active player takes 1 random card from the Deck and looks at it. They may then pay 1C to the Treasury to take an additional card from the deck, and look at it. They may repeat that process as often as they choose, paying 1C for each additional card. They may secretly change any cards with their own, and then return as many as cards as they took back to the Deck.</p>
 							</header>
 						</div>
 						<div class="inner" id="c4">
 							<header>
 								<h2 class="communications">REPORTER</h2>
-								<p>Active player takes 1 random card from the Deck and 1C from the Treasury.  They may secretly change the card with one of their own, and then return 1 card to the Deck.</p>
+								<p>Active player takes 1 random card from the Deck and 1C from the Treasury. They may secretly change the card with one of their own, and then return 1 card to the Deck.</p>
 							</header>
 						</div>
 						<div class="inner" id="c5">
 							<header>
 								<h2 class="communications">NEWSCASTER</h2>
-								<p>Active player pays 1C to the Treasury, then takes 3 random cards from the Deck.  They may secretly change any cards with their own, and then return 3 cards to the Deck.</p>
+								<p>Active player pays 1C to the Treasury, then takes 3 random cards from the Deck. They may secretly change any cards with their own, and then return 3 cards to the Deck.</p>
 							</header>
 						</div>
 
@@ -335,49 +434,49 @@
 						<div class="inner" id="si1">
 							<header>
 								<h2 class="specialinterest">PEACEKEEPER</h2>
-								<p>Active player takes 1C from the Treasury and then places the Peacekeeping token in front of themselves.  While the Peacekeeping token is front of a player, that player cannot be targeted.  This does not prevent Coup actions nor preclude challenges.</p>
+								<p>Active player takes 1C from the Treasury and then places the Peacekeeping token in front of themselves. While the Peacekeeping token is front of a player, that player cannot be targeted. This does not prevent Coup actions nor preclude challenges.</p>
 							</header>
 						</div>
 						<div class="inner" id="si2">
 							<header>
 								<h2 class="specialinterest">PRIEST&#x1f6e1;</h2>
-								<p>When active player claims Priest, all other players become Targets and have to give 1C to the active player.  Counteraction: Target may claim Priest to avoid giving 1C to the active player.</p>
+								<p>When active player claims Priest, all other players become Targets and have to give 1C to the active player. <span class="counter">Counteraction:</span> Target may claim Priest to avoid giving 1C to the active player.</p>
 							</header>
 						</div>
 						<div class="inner" id="si3">
 							<header>
 								<h2 class="specialinterest">POLITICIAN&#x1f6e1;</h2>
-								<p>Active player declares Target and takes up to 2C from Target.  Counteraction: Target may claim Politician to avoid giving any coins.</p>
+								<p>Active player declares Target and takes up to 2C from Target. <span class="counter">Counteraction:</span> Target may claim Politician to avoid giving any coins.</p>
 							</header>
 						</div>
 						<div class="inner" id="si4">
 							<header>
 								<h2 class="specialinterest">COMMUNIST&#x1f6e1;</h2>
-								<p>Active player takes up to 3C from the player with the most coins (Target) and gives the taken coins to the player with the fewest coins. In the event of a tie for most or fewest coins, the active player decides who is the Target.  Counteraction: Target may claim Communist to avoid giving any coins.</p>
+								<p>Active player takes up to 3C from the player with the most coins (Target) and gives the taken coins to the player with the fewest coins. In the event of a tie for most or fewest coins, the active player decides who is the Target. <span class="counter">Counteraction:</span> Target may claim Communist to avoid giving any coins.</p>
 							</header>
 						</div>
 						<div class="inner" id="si5">
 							<header>
 								<h2 class="specialinterest">PROTESTOR&#x1f6e1;</h2>
-								<p>Active player pays 2C to the Treasury and declares Target. Any player may challenge, if not successfully challenged then any other player can pay 3C to the Treasury to join the Riot, and the Target loses a life. The player joining the Riot does not have to claim Protestor. If no other player joins the Riot, the action fails without coins being returned.  Counteraction: After both players have joined the Riot, the Target may claim Protestor to avoid losing a life.</p>
+								<p>Active player pays 2C to the Treasury and declares Target. Any player may challenge, if not successfully challenged then any other player can pay 3C to the Treasury to join the Riot, and the Target loses a life. The player joining the Riot does not have to claim Protestor. If no other player joins the Riot, the action fails without coins being returned. <span class="counter">Counteraction:</span> After both players have joined the Riot, the Target may claim Protestor to avoid losing a life.</p>
 							</header>
 						</div>
 						<div class="inner" id="si6">
 							<header>
 								<h2 class="specialinterest">FOREIGN CONSULAR</h2>
-								<p>Active player takes both Treaty tokens, placing one in front of themselves and one in front of another player.  Players with Treaty tokens may not Target each other unless they are the final two players. This includes Coup actions but does not preclude challenges.</p>
+								<p>Active player takes both Treaty tokens, placing one in front of themselves and one in front of another player. Players with Treaty tokens may not Target each other unless they are the final two players. This includes Coup actions but does not preclude challenges.</p>
 							</header>
 						</div>
 						<div class="inner" id="si7">
 							<header>
 								<h2 class="specialinterest">MISSIONARY</h2>
-								<p>When a player loses a life for any reason other than a Coup, they may claim the Missionary if the Deck has at least one card. The card claimed to be the Missionary is put aside face-down as the lost life and that player takes 1 card from the Deck.  If challenged, the card claimed as the Missionary is revealed. If the card is not the Missionary, the player that claimed the Missionary loses another life (and does not take 1 card from the Deck) - they may claim Missionary on the second life lost to avoid being eliminated. If the card is the Missionary, the challenger loses a life.</p>
+								<p>When a player loses a life for any reason other than a Coup, they may claim the Missionary if the Deck has at least one card. The card claimed to be the Missionary is put aside face-down as the lost life and that player takes 1 card from the Deck. If challenged, the card claimed as the Missionary is revealed. If the card is not the Missionary, the player that claimed the Missionary loses another life (and does not take 1 card from the Deck) - they may claim Missionary on the second life lost to avoid being eliminated. If the card is the Missionary, the challenger loses a life.</p>
 							</header>
 						</div>
 						<div class="inner" id="si8">
 							<header>
 								<h2 class="specialinterest">CUSTOMS OFFICER</h2>
-								<p>Active player takes both Tax tokens, placing one in front of themselves and one on a role card in play. Before any player can claim the role (for either an action or counteraction) that has the Tax token on it, they must first give 1C to the player with the Tax token - if they do not have a coin to give, they may not claim that role.  If the player that has the Tax token is eliminated, remove the Tax token from the role card.</p>
+								<p>Active player takes both Tax tokens, placing one in front of themselves and one on a role card in play. Before any player can claim the role (for either an action or counteraction) that has the Tax token on it, they must first give 1C to the player with the Tax token - if they do not have a coin to give, they may not claim that role. If the player that has the Tax token is eliminated, remove the Tax token from the role card.</p>
 							</header>
 						</div>
 						<div class="inner" id="si9">
@@ -389,7 +488,7 @@
 						<div class="inner" id="si10">
 							<header>
 								<h2 class="specialinterest">LAWYER</h2>
-								<p>At the end of any turn on which a player is eliminated, any other player may claim Lawyer and take all the coins from the eliminated player before those coins are returned to the Treasury.  If multiple players claim Lawyer, the coins are divided equally amongst those players with any excess going to the Treasury.</p>
+								<p>At the end of any turn on which a player is eliminated, any other player may claim Lawyer and take all the coins from the eliminated player before those coins are returned to the Treasury. If multiple players claim Lawyer, the coins are divided equally amongst those players with any excess going to the Treasury.</p>
 							</header>
 						</div>
 						<div class="inner" id="si11">
