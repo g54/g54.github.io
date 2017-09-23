@@ -71,7 +71,7 @@
 					hideOnClick: true,
 					hideOnSwipe: true,
 					resetScroll: true,
-					resetForms: true,
+					resetForms: false,
 					side: 'right',
 					target: $body,
 					visibleClass: 'is-menu-visible'
